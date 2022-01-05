@@ -41,16 +41,6 @@ function nobyda() {
 	const isSurge = typeof($httpAPI) !== 'undefined';
 	const m = `不支持您的APP版本, 请等待APP更新 ⚠️`;
 	this.getGroup = () => {
-		if (isSurge) {
-			return new Promise((resolve) => {
-				$httpAPI("GET", "v1/policies", {}, (b) => resolve(b['policy-groups']))
-			})
-		}
-		if (isLoon) {
-			const getName = JSON.parse($config.getConfig());
-			return getName['all_policy_groups'];
-		}
-		if (isQuanX) {
 			return new Promise((resolve) => {
 				$configuration.sendMessage({
 					action: "get_customized_policy"
@@ -60,26 +50,9 @@ function nobyda() {
 					} else resolve();
 				}, () => resolve());
 			})
-		}
-		return m;
 	}
 	this.getPolicy = (groupName) => {
-		if (isSurge) {
-			return new Promise((resolve) => {
-				$httpAPI("GET", "v1/policy_groups", {}, (b) => {
-					resolve(b[groupName].map(g => g.name))
-				})
-			})
-		}
-		if (isLoon) {
-			return new Promise((resolve) => {
-				$config.getSubPolicys(groupName, (b) => {
-					const get = JSON.parse(b || '[]').map(n => n.name);
-					resolve(get)
-				})
-			})
-		}
-		if (isQuanX) {
+		
 			return new Promise((resolve) => {
 				$configuration.sendMessage({
 					action: "get_customized_policy",
@@ -90,23 +63,9 @@ function nobyda() {
 					} else resolve();
 				}, () => resolve());
 			})
-		}
-		return m;
 	}
 	this.setPolicy = (group, policy) => {
-		if (isSurge) {
-			return new Promise((resolve) => {
-				$httpAPI("POST", "v1/policy_groups/select", {
-					group_name: group,
-					policy: policy
-				}, (b) => resolve(!b.error))
-			})
-		}
-		if (isLoon) {
-			const set = $config.setSelectPolicy(group, policy);
-			return set;
-		}
-		if (isQuanX) {
+
 			return new Promise((resolve) => {
 				$configuration.sendMessage({
 					action: "set_policy_state",
@@ -115,8 +74,7 @@ function nobyda() {
 					}
 				}).then((b) => resolve(!b.error), () => resolve());
 			})
-		}
-		return m;
+
 	}
 	this.done = (body) => {
 		const e = {
